@@ -1,0 +1,18 @@
+{
+  "TELEGRAM_BOT_TOKEN": "8452243063:AAFq-FDNoVw9NQhL-zrxaFZDxLx6kBC3Z9A",
+  "EMAIL_CONFIG": {
+    "service": "gmail",
+    "auth": {
+      "user": "vivoginan23@gmail.com",
+      "pass": "zmmybytaqorvmbuq"
+    }
+  },
+  "SUPPORT_EMAIL": "support@support.whatsapp.com",
+  "OWNER_ID": "6726423168",
+  "COOLDOWN_TIME": 5000,
+  "ADDITIONAL_OWNERS": [
+    "7179899967"
+  ],
+  "GRUP_ONLY": false,
+  "MAINTENANCE": false
+}

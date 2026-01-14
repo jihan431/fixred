@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-banding-bot",
+  "version": "1.0.0",
+  "description": "Bot Telegram untuk banding WhatsApp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "nodemailer": "^6.9.8",
+    "fs": "0.0.1-security"
+  },
+  "keywords": ["telegram", "bot", "whatsapp", "banding"],
+  "author": "zvn125",
+  "license": "MIT"
+}
