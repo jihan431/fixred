@@ -3,15 +3,16 @@
   "EMAIL_CONFIG": {
     "service": "gmail",
     "auth": {
-      "user": "vivoginan23@gmail.com",
-      "pass": "zmmybytaqorvmbuq"
+      "user": "bustinino280@gmail.com",
+      "pass": "ngjgwwyxoztcjcjk"
     }
   },
   "SUPPORT_EMAIL": "support@support.whatsapp.com",
   "OWNER_ID": "6726423168",
   "COOLDOWN_TIME": 5000,
   "ADDITIONAL_OWNERS": [
-    "7179899967"
+    "7179899967",
+    "8436266596"
   ],
   "GRUP_ONLY": false,
   "MAINTENANCE": false

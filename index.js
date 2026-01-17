@@ -694,6 +694,11 @@ bot.onText(/\/owner/, (msg) => {
 • /delpremium — Hapus user
 • /listpremium — Lihat list
 
+👥 <b>Owner Management</b>
+• /addowner — Tambah owner
+• /delowner — Hapus owner
+• /listowner — Lihat list owner
+
 ⚙️ <b>Settings</b>
 • /grubonly on/off
 • /maintanceon
@@ -708,17 +713,22 @@ bot.onText(/\/owner/, (msg) => {
 🔗 <b>@voidxsh1</b>
     `;
 
+    const keyboard = [
+        ['📧 /addgmail', '🔑 /addapp'],
+        ['🧪 /testemail', '📊 /stats'],
+        ['➕ /addpremium', '➖ /delpremium'],
+        ['📋 /listpremium', '⚙️ /grubonly on'],
+        ['🔧 /maintanceon', '✅ /maintanceoff'],
+        ['📢 /broadcast', '🏠 /menu']
+    ];
+
+    // Tambah keyboard owner management
+    keyboard.splice(3, 0, ['👑 /addowner', '❌ /delowner', '📋 /listowner']);
+
     bot.sendMessage(chatId, ownerMenu, {
         parse_mode: 'HTML',
         reply_markup: {
-            keyboard: [
-                ['📧 /addgmail', '🔑 /addapp'],
-                ['🧪 /testemail', '📊 /stats'],
-                ['➕ /addpremium', '➖ /delpremium'],
-                ['📋 /listpremium', '⚙️ /grubonly on'],
-                ['� /maintanceon', '✅ /maintanceoff'],
-                ['📢 /broadcast', '🏠 /menu']
-            ],
+            keyboard: keyboard,
             resize_keyboard: true
         }
     });
@@ -1036,6 +1046,141 @@ bot.onText(/\/broadcast(?:\s+(.+))?/, async (msg, match) => {
     bot.sendMessage(chatId, `✅ Broadcast: ${result.sent}/${result.total} chats`, { parse_mode: 'HTML' });
 });
 
+// ================== OWNER MANAGEMENT ==================
+
+bot.onText(/\/addowner(?:@\w+)?(?:\s+(\d+))?/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    if (!isOwner(userId)) {
+        return bot.sendMessage(chatId, '❌ Akses ditolak!', { parse_mode: 'HTML' });
+    }
+
+    const targetId = match[1];
+
+    // Jika tidak ada argument, tampilkan panduan
+    if (!targetId) {
+        return bot.sendMessage(chatId, 
+`📖 <b>PANDUAN ADDOWNER</b>
+━━━━━━━━━━━━━━━━━━━
+
+<b>Format:</b> <code>/addowner &lt;user_id&gt;</code>
+
+<b>Contoh:</b>
+• <code>/addowner 123456789</code>
+
+💡 <b>Cara dapat User ID:</b>
+User bisa kirim /start lalu lihat ID mereka`,
+            { parse_mode: 'HTML' }
+        );
+    }
+
+    // Cek apakah sudah ada
+    if (config.ADDITIONAL_OWNERS.includes(targetId) || targetId === config.OWNER_ID) {
+        return bot.sendMessage(chatId, `⚠️ User <code>${targetId}</code> sudah menjadi owner!`, { parse_mode: 'HTML' });
+    }
+
+    // Tambahkan ke additional owners
+    const newOwners = [...config.ADDITIONAL_OWNERS, targetId];
+    const success = configManager.updateAdditionalOwners(newOwners);
+
+    if (success) {
+        config = configManager.config;
+        log('info', `Owner ditambahkan: ${targetId}`);
+        bot.sendMessage(chatId, 
+`✅ <b>Owner Ditambahkan!</b>
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 User ID: <code>${targetId}</code>
+👑 Status: Owner
+
+💡 User sekarang bisa mengakses:
+• /addgmail — Ubah Gmail
+• /addapp — Ubah App Password
+• /testemail — Test email
+• /addpremium — Manage premium`,
+            { parse_mode: 'HTML' }
+        );
+    } else {
+        bot.sendMessage(chatId, '❌ Gagal menambahkan owner!', { parse_mode: 'HTML' });
+    }
+});
+
+bot.onText(/\/delowner(?:@\w+)?(?:\s+(\d+))?/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    if (!isOwner(userId)) {
+        return bot.sendMessage(chatId, '❌ Akses ditolak!', { parse_mode: 'HTML' });
+    }
+
+    const targetId = match[1];
+
+    // Jika tidak ada argument, tampilkan panduan
+    if (!targetId) {
+        return bot.sendMessage(chatId, 
+`📖 <b>PANDUAN DELOWNER</b>
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+<b>Format:</b> <code>/delowner &lt;user_id&gt;</code>
+
+<b>Contoh:</b>
+• <code>/delowner 123456789</code>`,
+            { parse_mode: 'HTML' }
+        );
+    }
+
+    // Cek apakah ada di list
+    if (!config.ADDITIONAL_OWNERS.includes(targetId)) {
+        return bot.sendMessage(chatId, `⚠️ User <code>${targetId}</code> bukan owner!`, { parse_mode: 'HTML' });
+    }
+
+    // Hapus dari additional owners
+    const newOwners = config.ADDITIONAL_OWNERS.filter(id => id !== targetId);
+    const success = configManager.updateAdditionalOwners(newOwners);
+
+    if (success) {
+        config = configManager.config;
+        log('info', `Owner dihapus: ${targetId}`);
+        bot.sendMessage(chatId, 
+`✅ <b>Owner Dihapus!</b>
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 User ID: <code>${targetId}</code>
+🚫 Status: Bukan owner lagi`,
+            { parse_mode: 'HTML' }
+        );
+    } else {
+        bot.sendMessage(chatId, '❌ Gagal menghapus owner!', { parse_mode: 'HTML' });
+    }
+});
+
+bot.onText(/\/listowner/, (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+
+    if (!isOwner(userId)) return bot.sendMessage(chatId, '❌ Akses ditolak!', { parse_mode: 'HTML' });
+
+    let list = `👑 <b>Main Owner:</b>\n• <code>${config.OWNER_ID}</code>\n\n`;
+    
+    if (config.ADDITIONAL_OWNERS.length > 0) {
+        list += `👥 <b>Additional Owners:</b>\n`;
+        config.ADDITIONAL_OWNERS.forEach((id, i) => {
+            list += `${i+1}. <code>${id}</code>\n`;
+        });
+    } else {
+        list += `👥 <b>Additional Owners:</b>\n<i>Tidak ada</i>`;
+    }
+
+    bot.sendMessage(chatId, 
+`📋 <b>Daftar Owner</b>
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+${list}`,
+        { parse_mode: 'HTML' }
+    );
+});
+
 // ================== ERROR HANDLING ==================
 bot.on('error', (error) => log('error', `Bot Error: ${error.message}`));
 bot.on('polling_error', (error) => log('error', `Polling Error: ${error.message}`));
@@ -1064,7 +1209,10 @@ bot.setMyCommands([
     { command: 'owner', description: '👑 Menu owner' },
     { command: 'testemail', description: '🔌 Test email (Owner)' },
     { command: 'addgmail', description: '📧 Ganti email (Owner)' },
-    { command: 'addapp', description: '🔑 Ganti password (Owner)' }
+    { command: 'addapp', description: '🔑 Ganti password (Owner)' },
+    { command: 'addowner', description: '👑 Tambah owner (Owner)' },
+    { command: 'delowner', description: '❌ Hapus owner (Owner)' },
+    { command: 'listowner', description: '📋 List owner (Owner)' }
 ]).then(() => {
     log('success', 'Commands berhasil didaftarkan ke Telegram');
 }).catch((err) => {

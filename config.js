@@ -7,8 +7,8 @@ let config = {
     EMAIL_CONFIG: {
         service: 'gmail',
         auth: {
-            user: 'jerapahhewan02@gmail.com',
-            pass: "ghcnzvseatpvahwi"
+            user: '', // Akan diisi dari bot-config.json
+            pass: ''  // Akan diisi dari bot-config.json
         }
     },
     SUPPORT_EMAIL: 'support@support.whatsapp.com',
@@ -58,6 +58,11 @@ function updateBotToken(newToken) {
     return saveConfig();
 }
 
+function updateAdditionalOwners(owners) {
+    config.ADDITIONAL_OWNERS = owners;
+    return saveConfig();
+}
+
 loadConfig();
 
 module.exports = {
@@ -65,6 +70,7 @@ module.exports = {
     updateConfig,
     updateEmailConfig,
     updateBotToken,
+    updateAdditionalOwners,
     saveConfig,
     loadConfig
 };
